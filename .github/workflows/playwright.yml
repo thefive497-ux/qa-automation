@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -26,7 +26,7 @@ jobs:
       - name: Run STG Tests
         run: npx playwright test tests/login.spec.ts --project=stg
 
-      - name: Upload STG HTML Report
+      - name: Upload STG Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -34,27 +34,28 @@ jobs:
           path: playwright-report/
 
   deploy:
-    name: Deploy to PROD
+    name: Deploy to Production
     needs: stg-test
-    if: success()
+    if: needs.stg-test.result == 'success'
     runs-on: ubuntu-latest
 
     steps:
       - name: Dummy Deployment
         run: |
-          echo "=========================="
+          echo "================================"
           echo "Deploying to Production..."
+          sleep 5
           echo "Deployment Successful"
-          echo "=========================="
+          echo "================================"
 
   prod-test:
     name: PROD Tests
     needs: deploy
-    if: success()
+    if: needs.deploy.result == 'success'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -71,7 +72,7 @@ jobs:
       - name: Run PROD Tests
         run: npx playwright test tests/login.spec.ts --project=prod
 
-      - name: Upload PROD HTML Report
+      - name: Upload PROD Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
