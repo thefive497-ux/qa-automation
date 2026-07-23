@@ -1,0 +1,56 @@
+name: STG to PROD Deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  stg-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run STG Tests
+        run: npx playwright test --project=stg
+
+  deploy:
+    needs: stg-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Dummy Deploy to PROD
+        run: echo "Deploying to Production..."
+
+  prod-test:
+    needs: deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run PROD Tests
+        run: npx playwright test --project=prod
