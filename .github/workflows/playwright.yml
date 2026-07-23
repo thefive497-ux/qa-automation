@@ -1,4 +1,4 @@
-name: STG to PROD Deployment
+name: Playwright STG PROD Pipeline
 
 on:
   workflow_dispatch:
